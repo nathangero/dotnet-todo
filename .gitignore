@@ -1,0 +1,34 @@
+# Ignore Visual Studio temporary files, build results, and
+# .NET Core config files
+bin/
+obj/
+*.user
+*.rsuser
+*.suo
+*.psess
+*.vsp
+.vscode/
+.idea/
+*.dll
+*.exe
+*.app
+*.log
+
+# Rider IDE
+.idea/
+
+# Avoid publishing folders or output that gets built:
+publish/
+
+# User-specific files
+*.db
+*.bak
+*.pdb
+
+# Dotnet generated files
+.env
+secrets.json
+
+# Logs and temporary files
+*.log
+*.tmp
