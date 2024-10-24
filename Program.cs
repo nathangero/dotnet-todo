@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 var KEY_TODO_TITLE = "title";
 var KEY_TODO_COMPLETION = "completed";
@@ -47,9 +48,9 @@ app.MapGet("/allTodos", () =>
     }
 });
 
-app.MapPut("/todo", (HttpContext context) =>
+app.MapPut("/todo", async (HttpContext context) =>
 {
-    var body = context.Request.ReadFromJsonAsync<Dictionary<string, string>>().Result;
+    var body = await context.Request.ReadFromJsonAsync<Dictionary<string, string>>();
     var todo = body["todo"];
 
     // Console.WriteLine(todo);
@@ -61,6 +62,27 @@ app.MapPut("/todo", (HttpContext context) =>
     index++;
 
     return Results.Json(DB);
+});
+
+app.MapPatch("/todo", async (HttpContext context) =>
+{
+    var body = await context.Request.ReadFromJsonAsync<Dictionary<string, object>>();
+
+    var todoIndex = ((JsonElement)body["index"]).GetInt32();
+    // Console.WriteLine(todoIndex);
+
+    var todoName = body.ContainsKey("todoName") ? body["todoName"].ToString() : null;
+
+    var completed = ((JsonElement)body["completed"]).GetBoolean();
+    // Console.WriteLine(completed);
+
+    if (todoName != null)
+    {
+        DB[todoIndex][KEY_TODO_TITLE] = todoName;
+    }
+
+    DB[todoIndex][KEY_TODO_COMPLETION] = completed;
+    return Results.Json(DB[todoIndex]);
 });
 
 app.Run();
