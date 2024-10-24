@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,6 +28,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+var KEY_TODO_TITLE = "title";
+var KEY_TODO_COMPLETION = "completed";
 var DB = new Dictionary<int, Dictionary<string, object>>();
 int index = 1;
 
@@ -41,6 +45,22 @@ app.MapGet("/allTodos", () =>
     {
         return Results.Json(DB);
     }
+});
+
+app.MapPut("/todo", (HttpContext context) =>
+{
+    var body = context.Request.ReadFromJsonAsync<Dictionary<string, string>>().Result;
+    var todo = body["todo"];
+
+    // Console.WriteLine(todo);
+
+    DB[index] = new Dictionary<string, object>{
+        {KEY_TODO_TITLE, todo},
+        {KEY_TODO_COMPLETION, false}, // A new todo is always not completed
+    };
+    index++;
+
+    return Results.Json(DB);
 });
 
 app.Run();
