@@ -85,4 +85,10 @@ app.MapPatch("/todo", async (HttpContext context) =>
     return Results.Json(DB[todoIndex]);
 });
 
+app.MapDelete("/{index:int}", (int index) =>
+{
+    DB.Remove(index);
+    return Results.Json(DB);
+});
+
 app.Run();
